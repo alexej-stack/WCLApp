@@ -1,0 +1,36 @@
+﻿<Window x:Class="WCLApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WCLApp"
+        xmlns:auth="clr-namespace:WCLApp.Auth"
+        xmlns:di="clr-namespace:WCLApp.Extension"
+        xmlns:controls="clr-namespace:WCLApp.Controls;assembly=WCLApp.Controls"
+        mc:Ignorable="d" Title="MainWindow" Height="450" Width="800"
+        d:DataContext="{d:DesignInstance Type=local:MainViewModel, IsDesignTimeCreatable=True}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TabControl ItemsSource="{Binding Sections}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Header}" />
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <controls:AuthPageControl 
+                        AuthenticatedView="{Binding AuthContent}" 
+                        UnauthenticatedView="{Binding UnAuthContent}" 
+                        IsAuthenticated="{Binding DataContext.IsLogged, RelativeSource={RelativeSource AncestorType=TabControl}}"/>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+        <StackPanel Grid.Column="1">
+            <di:Resolve Type="{x:Type auth:AuthView}" />
+        </StackPanel>
+    </Grid>
+</Window>

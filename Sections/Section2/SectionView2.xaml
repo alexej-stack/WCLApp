@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="Section2.SectionView2"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Section2"
+             mc:Ignorable="d">
+    <Grid>
+        <TextBlock Text="Профессиональный профиль" 
+                   FontWeight="Bold" 
+                   FontSize="16" 
+                   Margin="10"/>
+
+        <TextBlock Text="Я .Net-разработчик с 4 года коммерческого опыта в разработке корпоративных .Net-приложений. Мои ключевые навыки включают разработку и тестирование новых фичей, определение требований и эстимация выполнения. Уверенно работаю с ASP.NET Web API, WPF и базами данных (реляционными и нереляционными)."
+                   TextWrapping="Wrap"
+                   Margin="10,30,10,0"/>
+
+        <TextBlock Text="Я имею базовые знания Docker и Kubernetes, CI/CD, а также опыт работы с большим объемом данных и самостоятельной реализации архитектурных решений в рамках общей концепции приложений. Следую принципам Domain Driven Design."
+                   TextWrapping="Wrap"
+                   Margin="10,60,10,0"/>
+
+        <TextBlock Text="У меня уверенное образование в области математики и информатики. Личные качества включают быстрое обучение, высокий аналитический склад ума, коммуникабельность, хороший командный игрок, ответственность и трудолюбие."
+                   TextWrapping="Wrap"
+                   Margin="10,90,10,0"/>
+
+        <TextBlock Text="Профессиональные навыки:"
+                   FontWeight="Bold"
+                   Margin="10,130,10,0"/>
+
+        <StackPanel Margin="10,150,10,0">
+            <TextBlock Text="Языки программирования: C#, Python, MatLab, Wolfram"/>
+            <TextBlock Text="Web-технологии: ASP.NET Web API, Blazor, Angular, REST, gRPC"/>
+            <TextBlock Text="Серверы приложений: IIS, Kestrel"/>
+            <TextBlock Text="Базы данных: MS SQL, MySQL, SQLite, Elasticsearch, MongoDB"/>
+            <TextBlock Text="Операционные системы: Windows"/>
+            <TextBlock Text="Другие технологии: RabbitMQ, WPF, WinForms, Entity Framework, SharpDX, SignalR, AWS, Git, Docker, Kubernetes"/>
+            <TextBlock Text="Иностранные языки: Английский (Intermediate), Немецкий (Intermediate)"/>
+        </StackPanel>
+
+        <TextBlock Text="Образование и дополнительное профессиональное обучение:"
+                   FontWeight="Bold"
+                   Margin="10,270,10,0"/>
+
+        <StackPanel Margin="10,290,10,0">
+            <TextBlock Text="2017 – 2021: Белорусский Государственный Университет, Механико-математический факультет, Бакалавр. математик, системный аналитик"/>
+            <TextBlock Text="2021 – 2023: Белорусский Государственный Университет, Механико-математический факультет, магистр компьютерных наук"/>
+        </StackPanel>
+
+        <TextBlock Text="Профессиональный опыт:"
+                   FontWeight="Bold"
+                   Margin="10,350,10,0"/>
+
+        <StackPanel Margin="10,370,10,0">
+            <TextBlock Text="Ноябрь, 2021 – по настоящее время: Инженер-программист, Atomicus" FontWeight="Bold"/>
+            <TextBlock Text="Роль: Full-stack-разработчик"/>
+            <TextBlock Text="Описание проекта: Проект реализации комплекса приложений для интеграции устройства масс спектрометрии в общую экосистему заказчика."/>
+            <TextBlock Text="Обязанности: Совместное определение с заказчиком требований к проектируемой системе и эстимация сроков; Разработка серверной части приложения с использованием .NET, MS SQL, RabbitMQ; Разработка протокола общения клиент/сервер на базе gRPC; Разработка Blazor веб приложения для обработки, отображения, создания и манипуляции с данными; Развертывание сервисов в Docker Swarm; Проверка кода; Исправление ошибок."/>
+            <TextBlock Text="Средства разработки: Клиент: Blazor, C#, .NET 6, CSS; Сервер: gRPC, C#, .NET 6, RabbitMQ, EF 6; Кэширование: Raddis; БД: MS SQL Server (T-SQL); Тесты: xUnit; Система контроля версий: Git; CI/CD: Gitlab"/>
+            <TextBlock Text="Результаты: Реализован модульный компонент общей экосистемы с полным циклом интеграции устройства масс спектрометрии."/>
+
+            <TextBlock Text="Февраль, 2020 – сентябрь, 2021: Инженер-программист, ADVIN smart factory" FontWeight="Bold" Margin="0,10,0,0"/>
+            <TextBlock Text="Роль: .Net-разработчик"/>
+            <TextBlock Text="Описание проекта: Базовый проект для разработки приложений медицинского направления компании."/>
+            <TextBlock Text="Обязанности: Модификация ядра рендера изображения для повышения производительности при работе с большими медицинскими изображениями; Разработка и внедрение системы локализации для модульного WPF приложения; Добавление новой бизнес логики для управления процессом работы с медицинским устройством; Исправление ошибок; Проверка кода."/>
+            <TextBlock Text="Средства разработки: Клиент: WPF, C#, .NET Framework 4.8, Prism; Сервер: gRPC, C#, .NET Framework 4.8, COM; БД: MS SQL Server (T-SQL), SQLite, DOCPM storage; Rendering: SharpDX; Система контроля версий: Git; CI/CD: Gitlab"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
