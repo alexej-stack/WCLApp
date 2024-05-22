@@ -365,4 +365,4 @@ FodyWeavers.xsd
 # Misc
 **/bin/
 **/obj/
-Output/
+/Output
