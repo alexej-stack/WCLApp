@@ -1,6 +1,8 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Identity.Common;
+using Identity.Service.Common;
 using WCLApp.Common;
 
 namespace WCLApp;
@@ -8,7 +10,7 @@ namespace WCLApp;
 public class AuthClient : IAuthClient
 {
 	private readonly Uri baseUri;
-	private UserData currentUser;
+	private UserDataDto currentUser;
 	public event EventHandler<AuthStateChangedEventArgs> AuthStatusChanged;
 
 
@@ -17,35 +19,40 @@ public class AuthClient : IAuthClient
 		baseUri = settings.AuthUri;
 	}
 
-	public async Task<bool> RegisterUserAsync(RegisterUserData user, string password)
+	public async Task<RegisterResult> RegisterUserAsync(RegisterUserData user, string password)
 	{
 		using var httpClient = new HttpClient() { BaseAddress = baseUri };
 		var request = new RegisterUserRequestDto(user, password);
 		var response = await httpClient.PostAsJsonAsync("v2/auth/user", request);
-		currentUser = await GetUserAsync(user.UserName);
+
 		if (response.IsSuccessStatusCode)
 		{
+			currentUser = await GetUserAsync(user.UserName);
 			OnAuthStatusChanged(user.UserName, true);
-			return true;
+			return new RegisterResult(true, Enumerable.Empty<string>());
 		}
-
-		return false;
+		else
+		{
+			var errorContent = await response.Content.ReadAsStringAsync();
+			var errors = ParseErrors(errorContent);
+			return new RegisterResult(false, errors);
+		}
 	}
 
-	public async Task<bool> LoginAsync(string login, string password)
+	public async Task<LoginResult> LoginAsync(string login, string password)
 	{
 		using var httpClient = new HttpClient() { BaseAddress = baseUri };
 		var request = new LoginUserRequestDto(login, password);
 		var response = await httpClient.PostAsJsonAsync("v2/auth/login", request);
-		//ToDo: need check placement
-		currentUser = await GetUserAsync(login);
+
 		if (response.IsSuccessStatusCode)
 		{
+			currentUser = await GetUserAsync(login);
 			OnAuthStatusChanged(login, true);
-			return true;
+			return new LoginResult(true);
 		}
 
-		return false;
+		return new LoginResult(false);
 	}
 
 	public async Task<bool> LogoutAsync()
@@ -64,14 +71,14 @@ public class AuthClient : IAuthClient
 		return false;
 	}
 
-	public async Task<UserData> GetUserAsync(string userName)
+	public async Task<UserDataDto> GetUserAsync(string userName)
 	{
 		using var httpClient = new HttpClient() { BaseAddress = baseUri };
 		var response = await httpClient.GetAsync($"v2/auth/user/{userName}");
 
 		if (response.IsSuccessStatusCode)
 		{
-			var user = await response.Content.ReadFromJsonAsync<UserData>();
+			var user = await response.Content.ReadFromJsonAsync<UserDataDto>();
 			return user;
 		}
 
@@ -81,6 +88,23 @@ public class AuthClient : IAuthClient
 	protected virtual void OnAuthStatusChanged(string username, bool isLogged)
 	{
 		AuthStatusChanged?.Invoke(this, new AuthStateChangedEventArgs(username, isLogged));
+	}
+
+	private IEnumerable<string> ParseErrors(string errorContent)
+	{
+		var errorList = new List<string>();
+
+		using JsonDocument doc = JsonDocument.Parse(errorContent);
+		if (doc.RootElement.TryGetProperty("errors", out JsonElement errorsElement) &&
+		    errorsElement.ValueKind == JsonValueKind.Array)
+		{
+			foreach (JsonElement error in errorsElement.EnumerateArray())
+			{
+				errorList.Add(error.GetString());
+			}
+		}
+
+		return errorList;
 	}
 
 	public record RegisterUserRequestDto(RegisterUserData User, string Password);

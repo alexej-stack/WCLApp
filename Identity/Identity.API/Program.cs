@@ -1,4 +1,5 @@
 using Identity.API.Data;
+using Identity.API.Extension;
 using Identity.API.Services;
 using Identity.Service.Common;
 using Microsoft.EntityFrameworkCore;
@@ -14,15 +15,17 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(opts =>
 {
 	var connectionString = builder.Configuration.GetConnectionString("IdentityDbConnection");
-	opts.UseSqlServer(connectionString,
-		sqlServerOptions => sqlServerOptions.MigrationsAssembly(typeof(Program).Assembly.FullName));
+	//opts.UseSqlServer(connectionString,
+	//	sqlServerOptions => sqlServerOptions.MigrationsAssembly(typeof(Program).Assembly.FullName));
 	//ToDO: add possibility to define sql server provider
-	//opts.UseSqlite(connectionString,
-	//	options => { options.MigrationsAssembly(System.Reflection.Assembly.GetExecutingAssembly().GetName().Name); });
+	opts.UseSqlite(connectionString,
+		options => { options.MigrationsAssembly(System.Reflection.Assembly.GetExecutingAssembly().GetName().Name); });
 });
 
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddAuthentication();
+builder.Services.ConfigureIdentity();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -46,6 +49,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

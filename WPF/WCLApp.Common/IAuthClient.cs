@@ -1,4 +1,5 @@
 ﻿using Identity.Common;
+using Identity.Service.Common;
 
 namespace WCLApp.Common;
 
@@ -6,10 +7,10 @@ public interface IAuthClient
 {
 	event EventHandler<AuthStateChangedEventArgs> AuthStatusChanged;
 
-	Task<UserData> GetUserAsync(string userName);
-	Task<bool> LoginAsync(string login, string password);
+	Task<UserDataDto> GetUserAsync(string userName);
+	Task<LoginResult> LoginAsync(string login, string password);
 	Task<bool> LogoutAsync();
-	Task<bool> RegisterUserAsync(RegisterUserData user, string password);
+	Task<RegisterResult> RegisterUserAsync(RegisterUserData user, string password);
 }
 
 public class AuthStateChangedEventArgs : EventArgs

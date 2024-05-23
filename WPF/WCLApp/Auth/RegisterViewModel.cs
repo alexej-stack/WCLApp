@@ -63,15 +63,15 @@ namespace WCLApp.Auth
 		private async Task Register()
 		{
 			var user = new RegisterUserData(UserName, LastName, PhoneNumber, Email);
-			IsRegistered = await authClient.RegisterUserAsync(user, Password);
-
+			var regRes = await authClient.RegisterUserAsync(user, Password);
+			IsRegistered = regRes.Status;
 			if (IsRegistered)
 			{
 				CloseDialog(true);
 			}
 			else
 			{
-				MessageBox.Show("Registration failed");
+				MessageBox.Show(regRes.Errors.Count().ToString());
 			}
 		}
 

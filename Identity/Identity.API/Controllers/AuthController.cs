@@ -1,5 +1,7 @@
+using Identity.API.Data;
 using Identity.Common;
 using Identity.Service.Common;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.API.Controllers;
@@ -27,13 +29,13 @@ public class AuthController : ControllerBase
 
 		try
 		{
-			bool registrationSuccessful = await authService.RegisterUserAsync(request.User, request.Password);
-			if (registrationSuccessful)
+			var registerResult = await authService.RegisterUserAsync(request.User, request.Password);
+			if (registerResult.Status)
 			{
 				return Ok(new { Message = "User registered successfully" });
 			}
 
-			return BadRequest(new { Message = "Failed to register user" });
+			return BadRequest(new { Message = registerResult.Errors });
 		}
 		catch (Exception ex)
 		{
@@ -52,8 +54,8 @@ public class AuthController : ControllerBase
 
 		try
 		{
-			bool isAuthenticated = await authService.AuthenticateAsync(request.Login, request.Password);
-			if (isAuthenticated)
+			var authResult = await authService.AuthenticateAsync(request.Login, request.Password);
+			if (authResult.Status)
 			{
 				return Ok(new { Message = "Login successful" });
 			}

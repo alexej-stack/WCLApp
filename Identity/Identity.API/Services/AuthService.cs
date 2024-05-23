@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Identity.API.Data;
+﻿using Identity.API.Data;
 using Identity.Common;
 using Identity.Service.Common;
 using Identity.API.Helpers;
+using Microsoft.AspNetCore.Identity;
 
 namespace Identity.API.Services;
 
@@ -13,83 +13,63 @@ namespace Identity.API.Services;
 /// </summary>
 public class AuthService : IAuthService
 {
-	private readonly ApplicationDbContext dbContext;
-	private readonly IHttpContextAccessor httpContextAccessor;
-	private const string SessionKeyUser = "CurrentUser";
+	private readonly UserManager<ApplicationUser> userManager;
+	private readonly SignInManager<ApplicationUser> signInManager;
 
-	public AuthService(ApplicationDbContext dbContext, IHttpContextAccessor httpContextAccessor)
+	public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
 	{
-		this.dbContext = dbContext;
-		this.httpContextAccessor = httpContextAccessor;
+		this.userManager = userManager;
+		this.signInManager = signInManager;
 	}
 
-	public async Task<bool> RegisterUserAsync(RegisterUserData userData, string password)
+	public async Task<RegisterResult> RegisterUserAsync(RegisterUserData userData, string password)
 	{
 		var user = new ApplicationUser
 		{
 			UserName = userData.UserName,
 			LastName = userData.LastName,
 			PhoneNumber = userData.PhoneNumber,
-			Email = userData.Email,
-			Password = PasswordHasher.HashPassword(password)
+			Email = userData.Email
 		};
 
-		if (await dbContext.Users.AnyAsync(u => u.UserName == user.UserName))
+		var result = await userManager.CreateAsync(user, password);
+
+		if (result.Succeeded)
 		{
-			return false;
+			await signInManager.SignInAsync(user, isPersistent: false);
 		}
 
-		dbContext.Users.Add(user);
-		await dbContext.SaveChangesAsync();
+		return new RegisterResult(result.Succeeded, result.Errors.Select(er => $"{er.Code}|{er.Description}"));
+	}
 
-		SetCurrentUserSession(user);
+	public async Task<LoginResult> AuthenticateAsync(string username, string password)
+	{
+		var user = await userManager.FindByNameAsync(username);
+		if (user != null)
+		{
+			var result =
+				await signInManager.PasswordSignInAsync(user, password, isPersistent: false, lockoutOnFailure: false);
+			return new LoginResult(result.Succeeded);
+		}
+
+		return new LoginResult(false);
+	}
+
+	public async Task<UserDataDto> GetCurrentUserAsync()
+	{
+		var user = await userManager.GetUserAsync(signInManager.Context.User);
+		return user?.GetUserData();
+	}
+
+	public async Task<UserDataDto> GetUserDataAsync(string username)
+	{
+		var user = await userManager.FindByNameAsync(username);
+		return user?.GetUserData();
+	}
+
+	public async Task<bool> LogoutAsync()
+	{
+		await signInManager.SignOutAsync();
 		return true;
-	}
-
-	public async Task<bool> AuthenticateAsync(string username, string password)
-	{
-		var user = await dbContext.Users.FirstOrDefaultAsync(u => u.UserName == username);
-		if (user != null && PasswordHasher.VerifyPassword(password, user.Password))
-		{
-			SetCurrentUserSession(user);
-			return true;
-		}
-
-		return false;
-	}
-
-
-	public UserData GetCurrentUser()
-	{
-		var user = GetCurrentUserFromSession();
-		return user.GetUserData();
-	}
-
-	public async Task<UserData> GetUserDataAsync(string username)
-	{
-		var user = await dbContext.Users.FirstOrDefaultAsync(u => u.UserName == username);
-		return user.GetUserData();
-	}
-
-	public Task<bool> LogoutAsync()
-	{
-		ClearCurrentUserSession();
-		return Task.FromResult(true);
-	}
-
-	private void SetCurrentUserSession(ApplicationUser user)
-	{
-		httpContextAccessor.HttpContext?.Session.SetString(SessionKeyUser, user.UserName);
-	}
-
-	private ApplicationUser GetCurrentUserFromSession()
-	{
-		var userName = httpContextAccessor.HttpContext?.Session.GetString(SessionKeyUser);
-		return dbContext.Users.FirstOrDefault(u => u.UserName == userName) ?? throw new ArgumentNullException();
-	}
-
-	private void ClearCurrentUserSession()
-	{
-		httpContextAccessor.HttpContext?.Session.Remove(SessionKeyUser);
 	}
 }

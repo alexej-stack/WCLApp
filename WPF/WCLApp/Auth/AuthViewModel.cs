@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using System.Windows;
+using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
 using WCLApp.Common;
 
@@ -53,7 +54,7 @@ public class AuthViewModel : ViewModelBase
 
 	private async Task Login()
 	{
-		await authClient.LoginAsync(LoginString, Password);
+		var loginResult = await authClient.LoginAsync(LoginString, Password);
 	}
 
 	private void OpenRegisterDialog()

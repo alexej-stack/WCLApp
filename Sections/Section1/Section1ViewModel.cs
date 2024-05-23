@@ -6,9 +6,9 @@ namespace Section1;
 public class Section1ViewModel : ViewModelBase
 {
 	private readonly IAuthClient authClient;
-	private UserData currentUser;
+	private UserDataDto currentUser;
 
-	public UserData CurrentUser
+	public UserDataDto CurrentUser
 	{
 		get => currentUser;
 		private set => SetProperty(ref currentUser, value);

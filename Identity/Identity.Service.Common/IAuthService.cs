@@ -4,9 +4,9 @@ namespace Identity.Service.Common;
 
 public interface IAuthService
 {
-	Task<bool> RegisterUserAsync(RegisterUserData userData, string password);
-	Task<bool> AuthenticateAsync(string username, string password);
-	UserData GetCurrentUser();
+	Task<RegisterResult> RegisterUserAsync(RegisterUserData userData, string password);
+	Task<LoginResult> AuthenticateAsync(string username, string password);
+	Task<UserDataDto> GetCurrentUserAsync();
 	Task<bool> LogoutAsync();
-	Task<UserData> GetUserDataAsync(string username);
+	Task<UserDataDto> GetUserDataAsync(string username);
 }

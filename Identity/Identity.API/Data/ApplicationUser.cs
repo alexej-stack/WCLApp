@@ -1,33 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Identity.API.Helpers;
+using Microsoft.AspNetCore.Identity;
 
 namespace Identity.API.Data;
 
-public class ApplicationUser
+public sealed class ApplicationUser : IdentityUser
 {
-	public Guid Id { get; set; } = Guid.NewGuid();
-
-	[Required] public string UserName { get; set; }
-
-	[Required] public string Password { get; set; }
-
 	public string LastName { get; set; }
 
 	[RegularExpression(@"^\+?(\d[\d-. ]+)?(\([\d-. ]+\))?[\d-. ]+\d$", ErrorMessage = "Invalid phone number")]
-	public string PhoneNumber { get; set; }
+	public override string PhoneNumber { get; set; }
 
 	[Required]
 	[RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Invalid email address")]
-	public string Email { get; set; }
+	public override string Email { get; set; }
 
 	public ApplicationUser()
 	{
 	}
 
-	public ApplicationUser(string password, string name, string lastName, string phoneNumber)
+	public ApplicationUser(string password, string name, string lastName, string phoneNumber, string email) : base(name)
 	{
-		UserName = name;
-		Password = PasswordHasher.HashPassword(password);
+		Email = email;
+		PasswordHash = PasswordHasher.HashPassword(password);
 		LastName = lastName;
 		PhoneNumber = phoneNumber;
 	}
